@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_tracking_app_for_tasks/views/multi_board_list.dart';
 import 'viewmodels/project_viewmodel.dart';
 import 'viewmodels/task_viewmodel.dart';
 import 'viewmodels/comment_viewmodel.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: KanbanBoard(),
+        home: const MultiBoardList(),
       ),
     );
   }

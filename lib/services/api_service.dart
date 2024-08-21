@@ -115,27 +115,30 @@ class ApiService {
     return json.decode(response.body);
   }
 
-  Future<Task> createTask(String content, String dueString, String dueLang, int priority) async {
+  Future<Task> createTask(
+      String projectId, String sectionId, String content, String? dueString) async {
     final response = await http.post(
       Uri.parse('$baseUrl/tasks'),
       headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
       body: json.encode({
         "content": content,
-        dueString: "tomorrow at 12:00",
-        "due_lang": dueLang,
-        "priority": priority
+        "due_string": dueString,
+        "project_id": projectId,
+        "section_id": sectionId
       }),
     );
-    return json.decode(response.body);
+    
+    return Task.fromJson(json.decode(response.body));
   }
 
-  Future<Task> updateTask(String id, String content) async {
+  Future<Task> updateTask(String id, String? content) async {
     final response = await http.post(
       Uri.parse('$baseUrl/tasks/$id'),
       headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
       body: json.encode({"content": content}),
     );
-    return json.decode(response.body);
+
+    return Task.fromJson(json.decode(response.body));
   }
 
   Future<void> deleteTask(String id) async {

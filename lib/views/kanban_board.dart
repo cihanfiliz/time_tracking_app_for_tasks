@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracking_app_for_tasks/components/selected_task.dart';
+import 'package:time_tracking_app_for_tasks/models/section_model.dart';
+import 'package:time_tracking_app_for_tasks/models/task_model.dart';
 import '../viewmodels/project_viewmodel.dart';
 import '../viewmodels/task_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -9,11 +12,11 @@ class KanbanBoard extends StatefulWidget {
 }
 
 class _KanbanBoardState extends State<KanbanBoard> {
-  List<String> todoTasks = [];
-  List<String> inProgressTasks = [];
-  List<String> doneTasks = [];
+  List<Task> todoTasks = [];
+  List<Task> inProgressTasks = [];
+  List<Task> doneTasks = [];
 
-  String? draggingTask;
+  Task? draggingTask;
   int? originalIndex;
   String? originalColumn;
   bool taskDropped = false;
@@ -45,20 +48,20 @@ class _KanbanBoardState extends State<KanbanBoard> {
                   debugPrint("task: ${task.content}");
                   if (section.id == task.sectionId) {
                     if (section.order == 1) {
-                      todoTasks.add(task.content);
+                      todoTasks.add(task);
                     } else if (section.order == 2) {
-                      inProgressTasks.add(task.content);
+                      inProgressTasks.add(task);
                     } else if (section.order == 3) {
-                      doneTasks.add(task.content);
+                      doneTasks.add(task);
                     }
                   }
                 }
               }
               return Row(
                 children: [
-                  buildColumn('To Do', todoTasks),
-                  buildColumn('In Progress', inProgressTasks),
-                  buildColumn('Done', doneTasks),
+                  buildColumn(taskViewModel.sections[0], todoTasks),
+                  buildColumn(taskViewModel.sections[1], inProgressTasks),
+                  buildColumn(taskViewModel.sections[2], doneTasks),
                 ],
               );
             },
@@ -68,7 +71,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
     );
   }
 
-  Widget buildColumn(String title, List<String> tasks) {
+  Widget buildColumn(Section section, List<Task> tasks) {
     return Expanded(
       child: DragTarget<String>(
         builder: (context, accepted, rejected) {
@@ -78,37 +81,28 @@ class _KanbanBoardState extends State<KanbanBoard> {
             color: Colors.grey[200],
             child: Column(
               children: [
-                Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(section.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                     itemCount: tasks.length,
                     itemBuilder: (context, index) {
                       return Draggable<String>(
-                        data: tasks[index],
+                        data: tasks[index].content,
                         onDragStarted: () {
-                          setState(() {
-                            draggingTask = tasks[index];
-                            originalIndex = index;
-                            originalColumn = title;
-                            taskDropped = false;
-                          });
+                          //setState(() {
+                          draggingTask = tasks[index];
+                          originalIndex = index;
+                          originalColumn = section.name;
+                          taskDropped = false;
+                          tasks.removeAt(index);
+                          //});
                         },
                         feedback: Material(
-                          child: Container(
-                            width: 100,
-                            padding: EdgeInsets.all(8.0),
-                            color: Colors.blue,
-                            child: Text(tasks[index], style: TextStyle(color: Colors.white)),
-                          ),
+                          child: SelectedTask(content: tasks[index].content),
                         ),
-                        childWhenDragging: Container(),
-                        child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 4.0),
-                          padding: EdgeInsets.all(8.0),
-                          color: Colors.blue,
-                          child: Text(tasks[index], style: TextStyle(color: Colors.white)),
-                        ),
+                        //childWhenDragging: Container(),
+                        child: SelectedTask(content: tasks[index].content),
                       );
                     },
                   ),
@@ -117,28 +111,38 @@ class _KanbanBoardState extends State<KanbanBoard> {
             ),
           );
         },
-        onWillAccept: (data) => true,
-        onAccept: (data) {
-          setState(() {
+        //onWillAccept: (data) => true,
+        onAcceptWithDetails: (data) {
+          try {
+            //setState(() {
             taskDropped = true;
-            if (originalColumn != title) {
+            if (originalColumn != section.name) {
               // Move to a different column
-              tasks.add(data);
+              print(
+                  "draggingTask!.id: ${draggingTask!.id}, Moved to ${section.id}, original: $originalColumn");
               removeFromOriginalColumn();
+              TaskViewModel().deleteTask(draggingTask!.id);
+              TaskViewModel()
+                  .createTask(draggingTask!.content, section.projectId, section.id, null);
+              addToColumn(section.name);
             } else {
               // Snap to the same column's new position
-              tasks.removeAt(originalIndex!);
-              tasks.insert(originalIndex!, draggingTask!);
+              // tasks.removeAt(originalIndex!);
+              // tasks.insert(originalIndex!, draggingTask!);
             }
-          });
+            //});
+          } catch (e) {
+            print(e);
+          }
         },
         onLeave: (data) {
-          if (!taskDropped && draggingTask != null) {
-            setState(() {
-              // Snap back to original column if not dropped in a new column
-              addToOriginalColumn();
-            });
-          }
+          // print("hereeeeeee section name: ${section.name}, original: $originalColumn");
+          // if (!taskDropped && draggingTask != null) {
+          //   //setState(() {
+          //     // Snap back to original column if not dropped in a new column
+          //     addToColumn(originalColumn!);
+          //   //});
+          // }
         },
       ),
     );
@@ -146,20 +150,23 @@ class _KanbanBoardState extends State<KanbanBoard> {
 
   void removeFromOriginalColumn() {
     if (originalColumn == 'To Do') {
-      todoTasks.removeAt(originalIndex!);
+      print("in to do");
+      todoTasks.removeWhere((task) => task.id == draggingTask!.id);
     } else if (originalColumn == 'In Progress') {
-      inProgressTasks.removeAt(originalIndex!);
+      print("in in progress");
+      inProgressTasks.removeWhere((task) => task.id == draggingTask!.id);
     } else if (originalColumn == 'Done') {
-      doneTasks.removeAt(originalIndex!);
+      print("in done");
+      doneTasks.removeWhere((task) => task.id == draggingTask!.id);
     }
   }
 
-  void addToOriginalColumn() {
-    if (originalColumn == 'To Do') {
+  void addToColumn(String columnName) {
+    if (columnName == 'To Do') {
       todoTasks.insert(originalIndex!, draggingTask!);
-    } else if (originalColumn == 'In Progress') {
+    } else if (columnName == 'In Progress') {
       inProgressTasks.insert(originalIndex!, draggingTask!);
-    } else if (originalColumn == 'Done') {
+    } else if (columnName == 'Done') {
       doneTasks.insert(originalIndex!, draggingTask!);
     }
   }
