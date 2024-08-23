@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracking_app_for_tasks/views/multi_board_list.dart';
-import 'viewmodels/project_viewmodel.dart';
 import 'viewmodels/task_viewmodel.dart';
 import 'viewmodels/comment_viewmodel.dart';
-import 'views/kanban_board.dart';
+import 'viewmodels/project_viewmodel.dart';
+import 'views/main_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,16 +14,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ProjectViewModel()),
-        ChangeNotifierProvider(create: (context) => TaskViewModel()),
-        ChangeNotifierProvider(create: (context) => CommentViewModel()),
+        ChangeNotifierProvider(create: (_) => TaskViewModel()),
+        ChangeNotifierProvider(create: (_) => CommentViewModel()),
+        ChangeNotifierProvider(create: (_) => ProjectViewModel()),
       ],
       child: MaterialApp(
-        title: 'Todoist Clone',
+        title: 'Task Management App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MultiBoardList(),
+        home: MainPage(),
       ),
     );
   }

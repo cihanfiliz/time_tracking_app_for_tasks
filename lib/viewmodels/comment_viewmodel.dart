@@ -9,12 +9,22 @@ class CommentViewModel extends ChangeNotifier {
   List<Comment> get comments => _comments;
 
   Future<void> fetchComments(String taskId) async {
-    final commentsJson = await _apiService.getComments(taskId);
-    _comments = commentsJson.map((json) => Comment.fromJson(json as Map<String, dynamic>)).toList();
-    notifyListeners();
+    try {
+      _comments = await _apiService.getComments(taskId);
+      notifyListeners();
+    } catch (e) {
+      print('Error fetching comments: $e');
+    }
   }
 
   Future<void> addComment(String taskId, String content) async {
-    // Implement add comment logic
+    try {
+      final newComment =
+          await _apiService.createComment(taskId, content, DateTime.now().toString());
+      _comments.add(newComment);
+      notifyListeners();
+    } catch (e) {
+      print('Error creating comment: $e');
+    }
   }
 }

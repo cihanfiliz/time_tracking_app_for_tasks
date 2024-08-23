@@ -3,7 +3,8 @@ class Task {
   final String content;
   final bool isCompleted;
   final String projectId;
-  final String sectionId;
+  String sectionId;
+  final int order;
   final Due? due;
 
   Task({
@@ -12,6 +13,7 @@ class Task {
     required this.isCompleted,
     required this.projectId,
     required this.sectionId,
+    required this.order,
     this.due,
   });
 
@@ -22,13 +24,14 @@ class Task {
       isCompleted: json['is_completed'],
       projectId: json['project_id'],
       sectionId: json['section_id'],
+      order: json['order'],
       due: json['due'] != null ? Due.fromJson(json['due']) : null,
     );
   }
 
   @override
   String toString() {
-    return 'Task(id: $id, content: $content, isCompleted: $isCompleted, projectId: $projectId, sectionId: $sectionId, due: ${due?.toString()})';
+    return 'Task(id: $id, content: $content, isCompleted: $isCompleted, projectId: $projectId, sectionId: $sectionId, due: ${due?.toString()}, order: $order)';
   }
 }
 

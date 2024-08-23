@@ -127,7 +127,7 @@ class ApiService {
         "section_id": sectionId
       }),
     );
-    
+
     return Task.fromJson(json.decode(response.body));
   }
 
@@ -153,7 +153,9 @@ class ApiService {
       Uri.parse('$baseUrl/comments?task_id=$taskId'),
       headers: {'Authorization': 'Bearer $token'},
     );
-    return json.decode(response.body);
+    
+    final commentsJson = json.decode(response.body);
+    return List<Comment>.from(commentsJson.map((json) => Comment.fromJson(json)));
   }
 
   Future<Comment> getComment(String id) async {
@@ -164,13 +166,15 @@ class ApiService {
     return json.decode(response.body);
   }
 
-  Future<Comment> createComment(dynamic note) async {
+  Future<Comment> createComment(String taskId, String content, String postedAt) async {
     final response = await http.post(
       Uri.parse('$baseUrl/comments'),
       headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
-      body: json.encode(note),
+      body: json.encode({"task_id": taskId, "content": content, "posted_at": postedAt}),
     );
-    return json.decode(response.body);
+
+    final commentsJson = json.decode(response.body);
+    return Comment.fromJson(commentsJson);
   }
 
   Future<Comment> updateComment(String id, String content) async {
