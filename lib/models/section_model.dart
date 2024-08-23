@@ -12,6 +12,14 @@ class Section {
   });
 
   factory Section.fromJson(Map<String, dynamic> json) {
+    // Check for missing or null values and throw ArgumentError
+    if (json['id'] == null ||
+        json['project_id'] == null ||
+        json['name'] == null ||
+        json['order'] == null) {
+      throw ArgumentError('One or more required fields are missing or null');
+    }
+
     return Section(
       id: json['id'],
       projectId: json['project_id'],

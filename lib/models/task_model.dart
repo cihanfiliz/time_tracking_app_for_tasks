@@ -20,6 +20,14 @@ class Task {
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
+    if (json['id'] == null ||
+        json['content'] == null ||
+        json['project_id'] == null ||
+        json['section_id'] == null ||
+        json['order'] == null) {
+      throw ArgumentError('One or more required fields are missing or null');
+    }
+    
     return Task(
       id: json['id'],
       content: json['content'],
