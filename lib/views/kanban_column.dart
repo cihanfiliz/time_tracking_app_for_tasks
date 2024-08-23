@@ -43,10 +43,10 @@ class KanbanColumn extends StatelessWidget {
                           task: task,
                           onTimeTracked: (duration) {
                             // Save tracked time
-                            
+                            Provider.of<TaskViewModel>(context, listen: false)
+                                .updateTaskTimeSpent(task.id, duration);
                           },
                         ),
-                        Text(task.due?.date ?? ''),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -77,6 +77,14 @@ class KanbanColumn extends StatelessWidget {
                               moveTask(task, getNextSectionId(context));
                             },
                           ),
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            // Mark the task as completed
+                            Provider.of<TaskViewModel>(context, listen: false)
+                                .markTaskAsCompleted(task.id);
+                          },
+                        ),
                       ],
                     ),
                   ),

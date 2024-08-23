@@ -1,11 +1,12 @@
 class Task {
   final String id;
   final String content;
-  final bool isCompleted;
+  bool isCompleted;
   final String projectId;
   String sectionId;
   final int order;
-  final Due? due;
+  String? timeSpent;
+  String? completedOn;
 
   Task({
     required this.id,
@@ -14,7 +15,8 @@ class Task {
     required this.projectId,
     required this.sectionId,
     required this.order,
-    this.due,
+    this.timeSpent,
+    this.completedOn,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -25,43 +27,27 @@ class Task {
       projectId: json['project_id'],
       sectionId: json['section_id'],
       order: json['order'],
-      due: json['due'] != null ? Due.fromJson(json['due']) : null,
+      timeSpent: json['time_spent'],
+      completedOn: json['completed_on'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'content': content,
+      'is_completed': isCompleted,
+      'project_id': projectId,
+      'section_id': sectionId,
+      'order': order,
+      'time_spent': timeSpent,
+      'completed_on': completedOn,
+    };
   }
 
   @override
   String toString() {
-    return 'Task(id: $id, content: $content, isCompleted: $isCompleted, projectId: $projectId, sectionId: $sectionId, due: ${due?.toString()}, order: $order)';
+    return 'Task(id: $id, content: $content, isCompleted: $isCompleted, projectId: $projectId, sectionId: $sectionId, order: $order, timeSpent: $timeSpent, completedOn: $completedOn)';
   }
 }
 
-class Due {
-  final String date;
-  final bool isRecurring;
-  final String datetime;
-  final String string;
-  final String timezone;
-
-  Due({
-    required this.date,
-    required this.isRecurring,
-    required this.datetime,
-    required this.string,
-    required this.timezone,
-  });
-
-  factory Due.fromJson(Map<String, dynamic> json) {
-    return Due(
-      date: json['date'],
-      isRecurring: json['is_recurring'],
-      datetime: json['datetime'],
-      string: json['string'],
-      timezone: json['timezone'],
-    );
-  }
-
-  @override
-  String toString() {
-    return 'Due(date: $date, isRecurring: $isRecurring, datetime: $datetime, string: $string, timezone: $timezone)';
-  }
-}

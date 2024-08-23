@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'kanban_board_view.dart';
 import 'completed_tasks_view.dart';
-import '../viewmodels/task_viewmodel.dart';
-import '../viewmodels/comment_viewmodel.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -28,7 +25,7 @@ class _MainPageState extends State<MainPage> {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.view_column),
             label: 'Kanban Board',

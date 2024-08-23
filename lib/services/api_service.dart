@@ -116,13 +116,12 @@ class ApiService {
   }
 
   Future<Task> createTask(
-      String projectId, String sectionId, String content, String? dueString) async {
+      String projectId, String sectionId, String content) async {
     final response = await http.post(
       Uri.parse('$baseUrl/tasks'),
       headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
       body: json.encode({
         "content": content,
-        "due_string": dueString,
         "project_id": projectId,
         "section_id": sectionId
       }),
@@ -139,6 +138,15 @@ class ApiService {
     );
 
     return Task.fromJson(json.decode(response.body));
+  }
+
+  Future<bool> closeTask(String id) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/tasks/$id/close'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    return response.statusCode != 204 ? false : true;
   }
 
   Future<void> deleteTask(String id) async {

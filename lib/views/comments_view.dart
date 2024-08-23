@@ -2,16 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/comment_viewmodel.dart';
 
-class CommentsView extends StatelessWidget {
+class CommentsView extends StatefulWidget {
   final String taskId;
 
   CommentsView({required this.taskId});
 
   @override
+  State<CommentsView> createState() => _CommentsViewState();
+}
+
+class _CommentsViewState extends State<CommentsView> {
+  late TextEditingController textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController = TextEditingController();
+    // Fetch comments when the view is first loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CommentViewModel>(context, listen: false).fetchComments(widget.taskId);
+    });
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final commentViewModel = Provider.of<CommentViewModel>(context);
-    commentViewModel.fetchComments(taskId);
-    String submittedComment = '';
 
     return Scaffold(
       appBar: AppBar(
@@ -37,16 +58,15 @@ class CommentsView extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: textEditingController,
                     decoration: InputDecoration(labelText: 'Add a comment'),
-                    onChanged: (value) {
-                      submittedComment = value;
-                    },
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () {
-                    commentViewModel.addComment(taskId, submittedComment);
+                    commentViewModel.addComment(widget.taskId, textEditingController.text);
+                    textEditingController.clear();
                   },
                 ),
               ],

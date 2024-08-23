@@ -9,11 +9,11 @@ class TaskTimer extends StatefulWidget {
   TaskTimer({required this.task, required this.onTimeTracked});
 
   @override
-  _TaskTimerState createState() => _TaskTimerState();
+  TaskTimerState createState() => TaskTimerState();
 }
 
-class _TaskTimerState extends State<TaskTimer> {
-  Stopwatch _stopwatch = Stopwatch();
+class TaskTimerState extends State<TaskTimer> {
+  final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
 
   void _startTimer() {
@@ -38,6 +38,12 @@ class _TaskTimerState extends State<TaskTimer> {
     setState(() {});
   }
 
+  void stopAndSaveTimer() {
+    if (_stopwatch.isRunning) {
+      _stopTimer();
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -51,7 +57,8 @@ class _TaskTimerState extends State<TaskTimer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('${timeElapsed.inHours.toString().padLeft(2, '0')}:${(timeElapsed.inMinutes % 60).toString().padLeft(2, '0')}:${(timeElapsed.inSeconds % 60).toString().padLeft(2, '0')}'),
+        Text(
+            '${timeElapsed.inHours.toString().padLeft(2, '0')}:${(timeElapsed.inMinutes % 60).toString().padLeft(2, '0')}:${(timeElapsed.inSeconds % 60).toString().padLeft(2, '0')}'),
         Row(
           children: [
             IconButton(

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracking_app_for_tasks/models/section_model.dart';
-import 'package:time_tracking_app_for_tasks/models/task_model.dart';
 import 'package:time_tracking_app_for_tasks/views/kanban_column.dart';
 import '../viewmodels/task_viewmodel.dart';
-import 'task_timer.dart';
-import 'comments_view.dart';
 
 class KanbanBoardView extends StatelessWidget {
   @override
@@ -106,7 +103,7 @@ class KanbanBoardView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (taskContent.isNotEmpty) {
-                  taskViewModel.createTask(taskContent, selectedSectionId, null);
+                  taskViewModel.createTask(taskContent, selectedSectionId);
                   Navigator.of(context).pop();
                 }
               },

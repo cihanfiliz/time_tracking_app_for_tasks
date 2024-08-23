@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'viewmodels/task_viewmodel.dart';
 import 'viewmodels/comment_viewmodel.dart';
-import 'viewmodels/project_viewmodel.dart';
 import 'views/main_page.dart';
 
 void main() {
@@ -16,7 +15,6 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => TaskViewModel()),
         ChangeNotifierProvider(create: (_) => CommentViewModel()),
-        ChangeNotifierProvider(create: (_) => ProjectViewModel()),
       ],
       child: MaterialApp(
         title: 'Task Management App',
